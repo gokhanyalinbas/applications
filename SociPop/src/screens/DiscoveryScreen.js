@@ -11,9 +11,9 @@ import {
   Dimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { LineChart } from 'react-native-chart-kit';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, GRADIENTS } from '../constants/colors';
+import SimpleChart from '../components/SimpleChart';
 
 const { width } = Dimensions.get('window');
 
@@ -45,38 +45,11 @@ const DiscoveryScreen = () => {
   const filters = ['Food', 'Gaming', 'Lifestyle', 'Tech', 'Fashion'];
 
   const renderMiniChart = (data) => {
-    const chartData = {
-      labels: ['', '', '', ''],
-      datasets: [
-        {
-          data: data,
-          color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`,
-          strokeWidth: 2,
-        },
-      ],
-    };
-
-    const chartConfig = {
-      backgroundGradientFrom: '#ffffff',
-      backgroundGradientTo: '#ffffff',
-      color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`,
-      strokeWidth: 1,
-      useShadowColorFromDataset: false,
-      decimalPlaces: 1,
-    };
-
     return (
-      <LineChart
-        data={chartData}
+      <SimpleChart
+        data={data}
         width={120}
         height={60}
-        chartConfig={chartConfig}
-        bezier
-        withDots={false}
-        withInnerLines={false}
-        withOuterLines={false}
-        withVerticalLabels={false}
-        withHorizontalLabels={false}
         style={{ marginLeft: -20 }}
       />
     );

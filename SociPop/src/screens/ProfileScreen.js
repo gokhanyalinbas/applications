@@ -9,33 +9,14 @@ import {
   Dimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { LineChart } from 'react-native-chart-kit';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, GRADIENTS } from '../constants/colors';
+import SimpleChart from '../components/SimpleChart';
 
 const { width } = Dimensions.get('window');
 
 const ProfileScreen = () => {
-  const chartData = {
-    labels: ['', '', '', '', '', '', ''],
-    datasets: [
-      {
-        data: [900, 920, 935, 940, 938, 942, 937.4],
-        color: (opacity = 1) => `rgba(124, 58, 237, ${opacity})`,
-        strokeWidth: 3,
-      },
-    ],
-  };
-
-  const chartConfig = {
-    backgroundGradientFrom: '#ffffff',
-    backgroundGradientTo: '#ffffff',
-    color: (opacity = 1) => `rgba(124, 58, 237, ${opacity})`,
-    strokeWidth: 2,
-    barPercentage: 0.5,
-    useShadowColorFromDataset: false,
-    decimalPlaces: 1,
-  };
+  const chartData = [900, 920, 935, 940, 938, 942, 937.4];
 
   const socialAccounts = [
     {
@@ -103,18 +84,11 @@ const ProfileScreen = () => {
         <View style={styles.chartSection}>
           <Text style={styles.chartTitle}>PopScore History</Text>
           <View style={styles.chartContainer}>
-            <LineChart
+            <SimpleChart
               data={chartData}
               width={width - 60}
               height={200}
-              chartConfig={chartConfig}
-              bezier
               style={styles.chart}
-              withDots={true}
-              withInnerLines={false}
-              withOuterLines={false}
-              withVerticalLabels={false}
-              withHorizontalLabels={false}
             />
           </View>
         </View>

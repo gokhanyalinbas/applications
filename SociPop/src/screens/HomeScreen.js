@@ -8,33 +8,14 @@ import {
   Dimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { LineChart } from 'react-native-chart-kit';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, GRADIENTS } from '../constants/colors';
+import SimpleChart from '../components/SimpleChart';
 
 const { width } = Dimensions.get('window');
 
 const HomeScreen = () => {
-  const chartData = {
-    labels: ['', '', '', '', '', ''],
-    datasets: [
-      {
-        data: [850, 890, 920, 940, 950, 937.4],
-        color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`,
-        strokeWidth: 3,
-      },
-    ],
-  };
-
-  const chartConfig = {
-    backgroundGradientFrom: '#ffffff',
-    backgroundGradientTo: '#ffffff',
-    color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`,
-    strokeWidth: 2,
-    barPercentage: 0.5,
-    useShadowColorFromDataset: false,
-    decimalPlaces: 1,
-  };
+  const chartData = [850, 890, 920, 940, 950, 937.4];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -80,18 +61,11 @@ const HomeScreen = () => {
         <View style={styles.chartSection}>
           <Text style={styles.chartTitle}>30 day Vilg</Text>
           <View style={styles.chartContainer}>
-            <LineChart
+            <SimpleChart
               data={chartData}
               width={width - 60}
               height={120}
-              chartConfig={chartConfig}
-              bezier
               style={styles.chart}
-              withDots={false}
-              withInnerLines={false}
-              withOuterLines={false}
-              withVerticalLabels={false}
-              withHorizontalLabels={false}
             />
           </View>
         </View>
