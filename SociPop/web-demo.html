@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SociPop - Social Media Popularity Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #F9FAFB;
+            color: #111827;
+        }
+
+        .container {
+            max-width: 414px;
+            margin: 0 auto;
+            height: 100vh;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #7C3AED, #A855F7);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            padding-bottom: 80px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .section-label {
+            font-size: 16px;
+            color: #6B7280;
+            margin-bottom: 10px;
+        }
+
+        .main-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #111827;
+            margin-bottom: 10px;
+        }
+
+        .trend {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #10B981;
+            font-weight: 600;
+        }
+
+        .popscore-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .popscore-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10B981, #059669);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .popscore-label {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .popscore-value {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .chart-container {
+            height: 120px;
+            position: relative;
+            background: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .chart-line {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            height: 80px;
+        }
+
+        .chart-path {
+            stroke: #3B82F6;
+            stroke-width: 3;
+            fill: none;
+            stroke-linecap: round;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 414px;
+            background: white;
+            border-top: 1px solid #E5E7EB;
+            display: flex;
+            padding: 5px 0;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            text-decoration: none;
+            color: #9CA3AF;
+            transition: color 0.2s;
+        }
+
+        .nav-item.active {
+            color: #7C3AED;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .nav-label {
+            font-size: 12px;
+        }
+
+        .search-container {
+            background: white;
+            border-radius: 15px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input {
+            border: none;
+            outline: none;
+            flex: 1;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+
+        .filter-chips {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .filter-chip {
+            background: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 1px solid #E5E7EB;
+            font-size: 14px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-chip.active {
+            background: #7C3AED;
+            color: white;
+            border-color: #7C3AED;
+        }
+
+        .user-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .user-details h3 {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .user-details p {
+            font-size: 14px;
+            color: #6B7280;
+            margin-bottom: 2px;
+        }
+
+        .user-score {
+            text-align: right;
+        }
+
+        .score-label {
+            font-size: 12px;
+            color: #6B7280;
+        }
+
+        .score-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #111827;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .campaign-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .campaign-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .campaign-title {
+            font-size: 18px;
+            font-weight: bold;
+            flex: 1;
+        }
+
+        .campaign-type {
+            background: rgba(124, 58, 237, 0.2);
+            color: #7C3AED;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .campaign-description {
+            color: #6B7280;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .apply-button {
+            background: linear-gradient(135deg, #7C3AED, #A855F7);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 8px 20px;
+            border-radius: 20px;
+            background: #F3F4F6;
+            color: #6B7280;
+            margin-right: 15px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            background: #7C3AED;
+            color: white;
+        }
+
+        .social-account {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .social-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-size: 20px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .action-button {
+            flex: 1;
+            background: white;
+            border: none;
+            border-radius: 15px;
+            padding: 15px 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .link-account { color: #3B82F6; }
+        .remove-account { color: #EF4444; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>SociPop</h1>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Home Screen -->
+            <div id="home-screen">
+                <div class="section">
+                    <div class="section-label">Subscribers</div>
+                    <div class="main-number">12 K</div>
+                    <div class="trend">
+                        ↗ 8%
+                    </div>
+                </div>
+
+                <div class="popscore-container">
+                    <div class="popscore-circle">
+                        <div class="popscore-label">PopScore</div>
+                        <div class="popscore-value">937,4</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-label">Views</div>
+                    <div class="main-number">950,3</div>
+                </div>
+
+                <div class="section">
+                    <div class="section-label">30 day Vilg</div>
+                    <div class="chart-container">
+                        <svg class="chart-line" viewBox="0 0 300 80">
+                            <path class="chart-path" d="M0,60 Q50,45 75,40 Q125,35 150,30 Q200,25 225,35 Q275,40 300,45"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Discovery Screen -->
+            <div id="discovery-screen" class="hidden">
+                <div class="search-container">
+                    <span>🔍</span>
+                    <input type="text" class="search-input" placeholder="Search">
+                </div>
+
+                <div class="filter-chips">
+                    <div class="filter-chip active">Food</div>
+                    <div class="filter-chip">Gaming</div>
+                    <div class="filter-chip">Lifestyle</div>
+                    <div class="filter-chip">Tech</div>
+                    <div class="filter-chip">Fashion</div>
+                </div>
+
+                <div class="user-card">
+                    <div class="user-info">
+                        <div class="user-avatar" style="background: #4F46E5;">JS</div>
+                        <div class="user-details">
+                            <h3>John Smith</h3>
+                            <p>Food</p>
+                            <p>876K</p>
+                        </div>
+                    </div>
+                    <div class="user-score">
+                        <div class="score-label">PopScore</div>
+                        <div class="score-value">849.2</div>
+                    </div>
+                </div>
+
+                <div class="user-card">
+                    <div class="user-info">
+                        <div class="user-avatar" style="background: #EC4899;">SW</div>
+                        <div class="user-details">
+                            <h3>Sarah Wilson</h3>
+                            <p>Gaming</p>
+                            <p>15.4K</p>
+                        </div>
+                    </div>
+                    <div class="user-score">
+                        <div class="score-label">PopScore</div>
+                        <div class="score-value">912.6</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Campaigns Screen -->
+            <div id="campaigns-screen" class="hidden">
+                <div class="tabs">
+                    <div class="tab active">Campaigns</div>
+                    <div class="tab">Applied</div>
+                </div>
+
+                <div class="campaign-card">
+                    <div class="campaign-header">
+                        <div class="campaign-title">Summer Menu Promotion</div>
+                        <div class="campaign-type">Promotion</div>
+                    </div>
+                    <div class="campaign-description">Advertise our new summer menu</div>
+                    <button class="apply-button">Apply</button>
+                </div>
+
+                <div class="campaign-card">
+                    <div class="campaign-header">
+                        <div class="campaign-title">Game Launch Partnership</div>
+                        <div class="campaign-type">Partnership</div>
+                    </div>
+                    <div class="campaign-description">Promote our upcoming game</div>
+                    <button class="apply-button">Apply</button>
+                </div>
+            </div>
+
+            <!-- Profile Screen -->
+            <div id="profile-screen" class="hidden">
+                <div class="section">
+                    <h3 style="margin-bottom: 15px;">Connected Accounts</h3>
+                    
+                    <div class="social-account">
+                        <div class="social-left">
+                            <div class="social-icon" style="background: #FF0000;">📺</div>
+                            <span style="font-weight: 600;">YouTube</span>
+                        </div>
+                        <span>⌄</span>
+                    </div>
+
+                    <div class="social-account">
+                        <div class="social-left">
+                            <div class="social-icon" style="background: #E4405F;">📷</div>
+                            <span style="font-weight: 600;">Instagram</span>
+                        </div>
+                        <span>⌄</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>PopS74</h3>
+                    <p style="color: #6B7280; margin-bottom: 20px;">PopScore</p>
+                    <div style="display: flex; justify-content: center;">
+                        <div style="width: 120px; height: 120px; border-radius: 60px; background: linear-gradient(135deg, #10B981, #059669); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold;">937,4</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3 style="margin-bottom: 15px;">PopScore History</h3>
+                    <div class="chart-container">
+                        <svg class="chart-line" viewBox="0 0 300 80">
+                            <path class="chart-path" d="M0,50 Q50,45 75,35 Q125,30 150,32 Q200,30 225,25 Q275,30 300,35" stroke="#7C3AED"/>
+                            <circle cx="0" cy="50" r="4" fill="#7C3AED"/>
+                            <circle cx="75" cy="35" r="4" fill="#7C3AED"/>
+                            <circle cx="150" cy="32" r="4" fill="#7C3AED"/>
+                            <circle cx="225" cy="25" r="4" fill="#7C3AED"/>
+                            <circle cx="300" cy="35" r="4" fill="#7C3AED"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="action-button link-account">Link Account</button>
+                    <button class="action-button remove-account">Remove</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <a href="#" class="nav-item active" data-screen="home">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">Home</div>
+            </a>
+            <a href="#" class="nav-item" data-screen="discovery">
+                <div class="nav-icon">🔍</div>
+                <div class="nav-label">Discovery</div>
+            </a>
+            <a href="#" class="nav-item" data-screen="campaigns">
+                <div class="nav-icon">📢</div>
+                <div class="nav-label">Campaigns</div>
+            </a>
+            <a href="#" class="nav-item" data-screen="profile">
+                <div class="nav-icon">👤</div>
+                <div class="nav-label">Profile</div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all nav items and screens
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                document.querySelectorAll('[id$="-screen"]').forEach(screen => screen.classList.add('hidden'));
+                
+                // Add active class to clicked nav item
+                this.classList.add('active');
+                
+                // Show corresponding screen
+                const screenName = this.dataset.screen;
+                document.getElementById(screenName + '-screen').classList.remove('hidden');
+            });
+        });
+
+        // Filter chips functionality
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Tab functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Apply button functionality
+        document.querySelectorAll('.apply-button').forEach(button => {
+            button.addEventListener('click', function() {
+                alert('Campaign başvurusu gönderildi!');
+            });
+        });
+    </script>
+</body>
+</html>
